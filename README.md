@@ -12,9 +12,7 @@
 
 :trollface:
 
-Gregfluxology is a updated version of [Gregic Power](https://gitlab.com/DBotThePony/gregtech-fe) made by DBotThePony, which adds native duplex support of Forge Energy to
-
-GTCEu machinery.
+Gregfluxology is a updated version of [Gregic Power](https://gitlab.com/DBotThePony/gregtech-fe) made by DBotThePony, which adds native duplex support of Forge Energy to GTCEu machinery.
 
 ## Bug?
 
