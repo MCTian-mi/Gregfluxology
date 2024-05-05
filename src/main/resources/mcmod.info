@@ -1,0 +1,16 @@
+[
+{
+  "modid": "gregfluxology",
+  "name": "Gregfluxology",
+  "description": "Provides FE capability for GTEU tiles/items.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["DBotThePony"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
