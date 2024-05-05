@@ -14,7 +14,23 @@
 
 Gregfluxology is a updated version of [Gregic Power](https://gitlab.com/DBotThePony/gregtech-fe) made by DBotThePony, which adds native duplex support of Forge Energy to GTCEu machinery.
 
-## Bug?
+
+
+## User Responses
+
+"*I can't stand cults.*"
+
+<div style="text-align:right">—— 玄衣</h1>
+
+"*The voltage doesn't exist anymore.*"
+
+<div style="text-align:right">—— UMRU</h1>
+
+"*The mafia is after you now for your crimes. Your crimes surpass the constraints of law*"
+
+<div style="text-align:right">—— iris(@iristhepianist)</h1>
+
+## Bug
 
 Yes this is almost certainly to be buggy 'cause I can't code. Feel free to open issues. (P.S. I cen't spall aithar.)
 
