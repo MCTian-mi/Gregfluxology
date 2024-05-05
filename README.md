@@ -16,19 +16,21 @@ Gregfluxology is a updated version of [Gregic Power](https://gitlab.com/DBotTheP
 
 
 
-## User Responses
+## Responses
 
-"*I can't stand cults.*"
-
-<div style="text-align:right">—— 玄衣</h1>
-
-"*The voltage doesn't exist anymore.*"
-
-<div style="text-align:right">—— UMRU</h1>
-
-"*The mafia is after you now for your crimes. Your crimes surpass the constraints of law*"
-
-<div style="text-align:right">—— iris(@iristhepianist)</h1>
+<div>
+    <i>"I can't stand cults."</i>
+</div><div style="text-align: right">
+    —— 玄衣
+</div><br><div>
+    <i>"The voltage doesn't exist anymore."</i>
+</div><div style="text-align: right">
+    —— UMRU
+</div><br><div>
+    <i>"The mafia is after you now for your crimes. Your crimes surpass the constraints of law"</i>
+</div><div style="text-align: right">
+    —— iris(@iristhepianist)
+</div>
 
 ## Bug
 
