@@ -20,14 +20,8 @@
 
 package gregfluxology;
 
-import gregfluxology.eu.EnergyProviderItem;
+import gregfluxology.eu.FEToEUProvider;
 import gregtech.api.capability.FeCompat;
-import gregtech.common.ConfigHolder;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import org.apache.logging.log4j.Logger;
-
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -36,10 +30,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import gregfluxology.eu.EnergyProvider;
-
-import java.lang.reflect.Field;
-import java.util.List;
+import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Tags.MODID, name = Tags.MODNAME, version = Tags.VERSION, dependencies = "after:gregtech;")
 public class Gregfluxology {
@@ -60,19 +51,19 @@ public class Gregfluxology {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
-	@Mod.EventHandler
-	public void init(FMLPostInitializationEvent event) {
-		ConfigHolder.compat.energy.nativeEUToFE = false;
-		logger.info("NativeEUToFE has been disabled");
-	}
+//	@Mod.EventHandler
+//	public void init(FMLPostInitializationEvent event) {
+//		ConfigHolder.compat.energy.nativeEUToFE = false;
+//		logger.info("NativeEUToFE has been disabled");
+//	}
 
 	@SubscribeEvent
 	public void attachTileCapability(AttachCapabilitiesEvent<TileEntity> event) {
-		event.addCapability(resourceLocation, new EnergyProvider(event.getObject()));
+		event.addCapability(resourceLocation, new FEToEUProvider(event.getObject()));
 	}
 
-	@SubscribeEvent
-	public void attachItemCapability(AttachCapabilitiesEvent<ItemStack> event) {
-		event.addCapability(resourceLocation, new EnergyProviderItem(event.getObject()));
-	}
+//	@SubscribeEvent
+//	public void attachItemCapability(AttachCapabilitiesEvent<ItemStack> event) {
+//		event.addCapability(resourceLocation, new EnergyProviderItem(event.getObject()));
+//	}
 }

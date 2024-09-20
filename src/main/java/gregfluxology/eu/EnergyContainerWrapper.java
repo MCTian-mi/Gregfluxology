@@ -19,10 +19,12 @@
 // DEALINGS IN THE SOFTWARE.
 
 package gregfluxology.eu;
-import gregfluxology.Gregfluxology;
 
+import gregfluxology.Gregfluxology;
 import gregtech.api.capability.FeCompat;
 import gregtech.api.capability.IEnergyContainer;
+import gregtech.api.capability.impl.EUToFEProvider;
+import gregtech.api.pipenet.tile.IPipeTile;
 import gregtech.common.pipelike.cable.tile.TileEntityCable;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -37,7 +39,7 @@ public class EnergyContainerWrapper implements IEnergyStorage {
 	}
 
 	boolean isValid() {
-		return container != null && !(container instanceof GregicEnergyContainerWrapper);
+        return container != null && !(container instanceof EUToFEProvider);
 	}
 
 	private int maxSpeedIn() {
@@ -199,7 +201,7 @@ public class EnergyContainerWrapper implements IEnergyStorage {
 
 	@Override
 	public boolean canExtract() {
-		if (container instanceof TileEntityCable) {
+		if (container instanceof IPipeTile<?,?>) {
 			return false;
 		}
 
