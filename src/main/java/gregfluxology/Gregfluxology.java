@@ -1,4 +1,3 @@
-
 // Copyright (C) 2018 DBot
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,22 +33,27 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Tags.MODID, name = Tags.MODNAME, version = Tags.VERSION, dependencies = "after:gregtech;")
 public class Gregfluxology {
-	public ResourceLocation resourceLocation;
-	public static Logger logger;
 
-	public static final long MAX_VALUE_AS_LONG = Long.MAX_VALUE / FeCompat.ratio(false);
-	public static final long OVERFLOW_CHECK = Integer.MAX_VALUE / FeCompat.ratio(false);
+    public static final long MAX_VALUE_AS_LONG = Long.MAX_VALUE / FeCompat.ratio(false);
+    public static final long OVERFLOW_CHECK = Integer.MAX_VALUE / FeCompat.ratio(false);
+    public static Logger logger;
+    public ResourceLocation resourceLocation;
 
-	@Mod.EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		resourceLocation = new ResourceLocation(Tags.MODID, "fecapability");
-		logger = event.getModLog();
-	}
+    /**
+     * Safely cast a Long to an Int without overflow.
+     *
+     * @param v The Long value to cast to an Int.
+     * @return v, cast to Int, or Integer.MAX_VALUE if it would overflow.
+     */
+    public static int safeCastLongToInt(long v) {
+        return v > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) v;
+    }
 
-	@Mod.EventHandler
-	public void init(FMLInitializationEvent event) {
-		MinecraftForge.EVENT_BUS.register(this);
-	}
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        resourceLocation = new ResourceLocation(Tags.MODID, "fecapability");
+        logger = event.getModLog();
+    }
 
 //	@Mod.EventHandler
 //	public void init(FMLPostInitializationEvent event) {
@@ -57,10 +61,15 @@ public class Gregfluxology {
 //		logger.info("NativeEUToFE has been disabled");
 //	}
 
-	@SubscribeEvent
-	public void attachTileCapability(AttachCapabilitiesEvent<TileEntity> event) {
-		event.addCapability(resourceLocation, new FEToEUProvider(event.getObject()));
-	}
+    @Mod.EventHandler
+    public void init(FMLInitializationEvent event) {
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void attachTileCapability(AttachCapabilitiesEvent<TileEntity> event) {
+        event.addCapability(resourceLocation, new FEToEUProvider(event.getObject()));
+    }
 
 //	@SubscribeEvent
 //	public void attachItemCapability(AttachCapabilitiesEvent<ItemStack> event) {

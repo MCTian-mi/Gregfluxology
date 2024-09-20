@@ -1,4 +1,3 @@
-
 // Copyright (C) 2018 DBot
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,191 +24,176 @@ import gregtech.api.capability.FeCompat;
 import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.capability.impl.EUToFEProvider;
 import gregtech.api.pipenet.tile.IPipeTile;
-import gregtech.common.pipelike.cable.tile.TileEntityCable;
+import gregtech.common.metatileentities.converter.ConverterTrait;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.energy.IEnergyStorage;
 
 public class EnergyContainerWrapper implements IEnergyStorage {
-	private final IEnergyContainer container;
-	private EnumFacing facing = null;
 
-	public EnergyContainerWrapper(IEnergyContainer container, EnumFacing facing) {
-		this.container = container;
-		this.facing = facing;
-	}
+    private final IEnergyContainer container;
+    private EnumFacing facing = null;
 
-	boolean isValid() {
-        return container != null && !(container instanceof EUToFEProvider);
-	}
+    public EnergyContainerWrapper(IEnergyContainer container, EnumFacing facing) {
+        this.container = container;
+        this.facing = facing;
+    }
 
-	private int maxSpeedIn() {
-		long result = container.getInputAmperage() * container.getInputVoltage() * FeCompat.ratio(false);
+    boolean isValid() {
+        return container != null && !(container instanceof EUToFEProvider) && !(container instanceof ConverterTrait.EUContainer);
+    }
 
-		if (result > Integer.MAX_VALUE) {
-			return Integer.MAX_VALUE;
-		}
+    private int maxSpeedIn() {
+        long result = container.getInputAmperage() * container.getInputVoltage() * FeCompat.ratio(false);
 
-		return (int) result;
-	}
+        return Gregfluxology.safeCastLongToInt(result);
+    }
 
-	private int maxSpeedOut() {
-		long result = container.getOutputAmperage() * container.getOutputVoltage() * FeCompat.ratio(false);
+    private int maxSpeedOut() {
+        long result = container.getOutputAmperage() * container.getOutputVoltage() * FeCompat.ratio(false);
 
-		if (result > Integer.MAX_VALUE) {
-			return Integer.MAX_VALUE;
-		}
+        return Gregfluxology.safeCastLongToInt(result);
+    }
 
-		return (int) result;
-	}
+    private int voltageIn() {
+        long result = container.getInputVoltage() * FeCompat.ratio(false);
 
-	private int voltageIn() {
-		long result = container.getInputVoltage() * FeCompat.ratio(false);
+        return Gregfluxology.safeCastLongToInt(result);
+    }
 
-		if (result > Integer.MAX_VALUE) {
-			return Integer.MAX_VALUE;
-		}
+    private int voltageOut() {
+        long result = container.getOutputVoltage() * FeCompat.ratio(false);
 
-		return (int) result;
-	}
+        return Gregfluxology.safeCastLongToInt(result);
+    }
 
-	private int voltageOut() {
-		long result = container.getOutputVoltage() * FeCompat.ratio(false);
+    // eNet in gregtech is private
+    // im unable to workaround cable burning.
+    @Override
+    public int receiveEnergy(int maxReceive, boolean simulate) {
+        if (!canReceive()) {
+            return 0;
+        }
 
-		if (result > Integer.MAX_VALUE) {
-			return Integer.MAX_VALUE;
-		}
+        if (maxReceive == 1 && simulate) {
+            // assuming we hit mekanism
+            return container.getEnergyCanBeInserted() > 0L ? 1 : 0;
+        }
 
-		return (int) result;
-	}
+        int speed = maxSpeedIn();
 
-	// eNet in gregtech is private
-	// im unable to workaround cable burning.
-	@Override
-	public int receiveEnergy(int maxReceive, boolean simulate) {
-		if (!canReceive()) {
-			return 0;
-		}
+        if (maxReceive > speed) {
+            maxReceive = speed;
+        }
 
-		if (maxReceive == 1 && simulate) {
-			// assuming we hit mekanism
-			return container.getEnergyCanBeInserted() > 0L ? 1 : 0;
-		}
+        int voltageIn = voltageIn();
 
-		int speed = maxSpeedIn();
+        maxReceive -= maxReceive % FeCompat.ratio(false);
+        maxReceive -= maxReceive % voltageIn;
 
-		if (maxReceive > speed) {
-			maxReceive = speed;
-		}
+        if (maxReceive <= 0 || maxReceive < voltageIn) {
+            return 0;
+        }
 
-		int voltageIn = voltageIn();
+        long missing = container.getEnergyCanBeInserted();
 
-		maxReceive -= maxReceive % FeCompat.ratio(false);
-		maxReceive -= maxReceive % voltageIn;
+        if (missing <= 0L || missing < voltageIn) {
+            return 0;
+        }
 
-		if (maxReceive <= 0 || maxReceive < voltageIn) {
-			return 0;
-		}
+        if (missing >= Gregfluxology.MAX_VALUE_AS_LONG) {
+            missing = Gregfluxology.MAX_VALUE_AS_LONG;
+        }
 
-		long missing = container.getEnergyCanBeInserted();
+        missing *= FeCompat.ratio(false);
 
-		if (missing <= 0L || missing < voltageIn) {
-			return 0;
-		}
+        if (missing < maxReceive) {
+            maxReceive = (int) missing;
+        }
 
-		if (missing >= Gregfluxology.MAX_VALUE_AS_LONG) {
-			missing = Gregfluxology.MAX_VALUE_AS_LONG;
-		}
+        if (!simulate) {
+            long voltage = container.getInputVoltage();
+            int ampers = (int) container.acceptEnergyFromNetwork(this.facing, voltage, maxReceive / (FeCompat.ratio(false) * voltage));
+            return ampers * voltageIn;
+        }
 
-		missing *= FeCompat.ratio(false);
+        return maxReceive;
+    }
 
-		if (missing < maxReceive) {
-			maxReceive = (int) missing;
-		}
+    @Override
+    public int extractEnergy(int maxExtract, boolean simulate) {
+        if (!canExtract()) {
+            return 0;
+        }
 
-		if (!simulate) {
-			long voltage = container.getInputVoltage();
-			int ampers = (int) container.acceptEnergyFromNetwork(this.facing, voltage, maxReceive / (FeCompat.ratio(false) * voltage));
-			return ampers * voltageIn;
-		}
+        int speed = maxSpeedOut();
 
-		return maxReceive;
-	}
+        if (maxExtract > speed) {
+            maxExtract = speed;
+        }
 
-	@Override
-	public int extractEnergy(int maxExtract, boolean simulate) {
-		if (!canExtract()) {
-			return 0;
-		}
+        maxExtract -= maxExtract % FeCompat.ratio(false);
+        maxExtract -= maxExtract % voltageOut();
 
-		int speed = maxSpeedOut();
+        if (maxExtract <= 0) {
+            return 0;
+        }
 
-		if (maxExtract > speed) {
-			maxExtract = speed;
-		}
+        long stored = container.getEnergyStored();
 
-		maxExtract -= maxExtract % FeCompat.ratio(false);
-		maxExtract -= maxExtract % voltageOut();
+        if (stored <= 0L) {
+            return 0;
+        }
 
-		if (maxExtract <= 0) {
-			return 0;
-		}
+        if (stored >= Gregfluxology.MAX_VALUE_AS_LONG) {
+            stored = Gregfluxology.MAX_VALUE_AS_LONG;
+        }
 
-		long stored = container.getEnergyStored();
+        stored *= FeCompat.ratio(false);
 
-		if (stored <= 0L) {
-			return 0;
-		}
+        if (stored < maxExtract) {
+            maxExtract = (int) stored;
+        }
 
-		if (stored >= Gregfluxology.MAX_VALUE_AS_LONG) {
-			stored = Gregfluxology.MAX_VALUE_AS_LONG;
-		}
+        if (!simulate) {
+            return (int) (container.removeEnergy(maxExtract / FeCompat.ratio(false)) * FeCompat.ratio(false));
+        }
 
-		stored *= FeCompat.ratio(false);
+        return maxExtract;
+    }
 
-		if (stored < maxExtract) {
-			maxExtract = (int) stored;
-		}
+    @Override
+    public int getEnergyStored() {
+        long value = container.getEnergyStored();
 
-		if (!simulate) {
-			return (int) (container.removeEnergy(maxExtract / FeCompat.ratio(false)) * FeCompat.ratio(false));
-		}
+        if (value >= Gregfluxology.MAX_VALUE_AS_LONG || value > Gregfluxology.OVERFLOW_CHECK) {
+            return Integer.MAX_VALUE;
+        }
 
-		return maxExtract;
-	}
+        return (int) (value * FeCompat.ratio(false));
+    }
 
-	@Override
-	public int getEnergyStored() {
-		long value = container.getEnergyStored();
+    @Override
+    public int getMaxEnergyStored() {
+        long value = container.getEnergyCapacity();
 
-		if (value >= Gregfluxology.MAX_VALUE_AS_LONG || value > Gregfluxology.OVERFLOW_CHECK) {
-			return Integer.MAX_VALUE;
-		}
+        if (value >= Gregfluxology.MAX_VALUE_AS_LONG || value > Gregfluxology.OVERFLOW_CHECK) {
+            return Integer.MAX_VALUE;
+        }
 
-		return (int) (value * FeCompat.ratio(false));
-	}
+        return (int) (value * FeCompat.ratio(false));
+    }
 
-	@Override
-	public int getMaxEnergyStored() {
-		long value = container.getEnergyCapacity();
+    @Override
+    public boolean canExtract() {
+        if (container instanceof IPipeTile<?, ?>) {
+            return false;
+        }
 
-		if (value >= Gregfluxology.MAX_VALUE_AS_LONG || value > Gregfluxology.OVERFLOW_CHECK) {
-			return Integer.MAX_VALUE;
-		}
+        return container.outputsEnergy(this.facing);
+    }
 
-		return (int) (value * FeCompat.ratio(false));
-	}
-
-	@Override
-	public boolean canExtract() {
-		if (container instanceof IPipeTile<?,?>) {
-			return false;
-		}
-
-		return container.outputsEnergy(this.facing);
-	}
-
-	@Override
-	public boolean canReceive() {
-		return container.inputsEnergy(this.facing);
-	}
+    @Override
+    public boolean canReceive() {
+        return container.inputsEnergy(this.facing);
+    }
 }

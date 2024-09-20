@@ -1,4 +1,3 @@
-
 // Copyright (C) 2018 DBot
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,60 +29,60 @@ import org.jetbrains.annotations.NotNull;
 
 public class FEToEUProvider extends CapabilityCompatProvider {
 
-	private final EnergyContainerWrapper[] facesRF = new EnergyContainerWrapper[7];
-	private boolean gettingValue = false;
+    private final EnergyContainerWrapper[] FEWrappers = new EnergyContainerWrapper[7];
+    private boolean gettingValue = false;
 
-	public FEToEUProvider(TileEntity tileEntity) {
-		super(tileEntity);
-	}
+    public FEToEUProvider(TileEntity tileEntity) {
+        super(tileEntity);
+    }
 
-	@Override
-	public boolean hasCapability(@NotNull Capability<?> capability, EnumFacing facing) {
-		if (gettingValue) {
-			return false;
-		}
+    @Override
+    public boolean hasCapability(@NotNull Capability<?> capability, EnumFacing facing) {
+        if (gettingValue) {
+            return false;
+        }
 
-		if (capability != CapabilityEnergy.ENERGY) {
-			return false;
-		}
+        if (capability != CapabilityEnergy.ENERGY) {
+            return false;
+        }
 
-		int faceID = facing == null ? 6 : facing.getIndex();
+        int faceID = facing == null ? 6 : facing.getIndex();
 
-		if (facesRF[faceID] == null) {
-			facesRF[faceID] = new EnergyContainerWrapper(getUpvalueCapability(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, facing), facing);
-		}
+        if (FEWrappers[faceID] == null) {
+            FEWrappers[faceID] = new EnergyContainerWrapper(getUpvalueCapability(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, facing), facing);
+        }
 
-		gettingValue = true;
-		boolean result = facesRF[faceID].isValid();
-		gettingValue = false;
-		return result;
-	}
+        gettingValue = true;
+        boolean result = FEWrappers[faceID].isValid();
+        gettingValue = false;
+        return result;
+    }
 
-	@Override
-	public <T> T getCapability(@NotNull Capability<T> capability, EnumFacing facing) {
-		if (gettingValue) {
-			return null;
-		}
+    @Override
+    public <T> T getCapability(@NotNull Capability<T> capability, EnumFacing facing) {
+        if (gettingValue) {
+            return null;
+        }
 
-		if (capability != CapabilityEnergy.ENERGY) {
-			return null;
-		}
+        if (capability != CapabilityEnergy.ENERGY) {
+            return null;
+        }
 
-		int faceID = facing == null ? 6 : facing.getIndex();
+        int faceID = facing == null ? 6 : facing.getIndex();
 
-		if (facesRF[faceID] == null) {
-			facesRF[faceID] = new EnergyContainerWrapper(getUpvalueCapability(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, facing), facing);
-		}
+        if (FEWrappers[faceID] == null) {
+            FEWrappers[faceID] = new EnergyContainerWrapper(getUpvalueCapability(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, facing), facing);
+        }
 
-		gettingValue = true;
+        gettingValue = true;
 
-		if (facesRF[faceID].isValid()) {
-			gettingValue = false;
-			return CapabilityEnergy.ENERGY.cast(facesRF[faceID]);
-		}
+        if (FEWrappers[faceID].isValid()) {
+            gettingValue = false;
+            return CapabilityEnergy.ENERGY.cast(FEWrappers[faceID]);
+        }
 
-		gettingValue = false;
+        gettingValue = false;
 
-		return null;
-	}
+        return null;
+    }
 }
