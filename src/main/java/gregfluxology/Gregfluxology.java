@@ -21,6 +21,7 @@ package gregfluxology;
 
 import gregfluxology.eu.FEToEUProvider;
 import gregtech.api.capability.FeCompat;
+import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -68,7 +69,10 @@ public class Gregfluxology {
 
     @SubscribeEvent
     public void attachTileCapability(AttachCapabilitiesEvent<TileEntity> event) {
-        event.addCapability(resourceLocation, new FEToEUProvider(event.getObject()));
+        var te = event.getObject();
+        if (te instanceof IGregTechTileEntity) {
+            event.addCapability(resourceLocation, new FEToEUProvider(te));
+        }
     }
 
 //	@SubscribeEvent

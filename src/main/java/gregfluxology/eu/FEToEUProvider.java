@@ -21,9 +21,9 @@ package gregfluxology.eu;
 
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.impl.CapabilityCompatProvider;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.energy.CapabilityEnergy;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,8 +32,8 @@ public class FEToEUProvider extends CapabilityCompatProvider {
     private final EnergyContainerWrapper[] FEWrappers = new EnergyContainerWrapper[7];
     private boolean gettingValue = false;
 
-    public FEToEUProvider(TileEntity tileEntity) {
-        super(tileEntity);
+    public FEToEUProvider(ICapabilityProvider upvalue) {
+        super(upvalue);
     }
 
     @Override
