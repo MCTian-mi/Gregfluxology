@@ -81,7 +81,7 @@ jobs:
           game-versions: |
             1.12.2
           dependencies: |
-            gregtech-ce-unofficial | recommends | *
+            gregtech-ce-unofficial | depends | *
           java: |
             8
           retry-attempts: 2
