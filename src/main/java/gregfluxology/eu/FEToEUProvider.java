@@ -19,70 +19,103 @@
 
 package gregfluxology.eu;
 
+import gregtech.api.capability.FeCompat;
 import gregtech.api.capability.GregtechCapabilities;
+import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.capability.impl.CapabilityCompatProvider;
+import gregtech.common.pipelike.cable.net.EnergyNetHandler;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 
 public class FEToEUProvider extends CapabilityCompatProvider {
 
-    private final EnergyContainerWrapper[] FEWrappers = new EnergyContainerWrapper[7];
-    private boolean gettingValue = false;
-
-    public FEToEUProvider(ICapabilityProvider upvalue) {
-        super(upvalue);
+    public FEToEUProvider(ICapabilityProvider upValue) {
+        super(upValue);
     }
 
     @Override
     public boolean hasCapability(@NotNull Capability<?> capability, EnumFacing facing) {
-        if (gettingValue) {
-            return false;
-        }
-
-        if (capability != CapabilityEnergy.ENERGY) {
-            return false;
-        }
-
-        int faceID = facing == null ? 6 : facing.getIndex();
-
-        if (FEWrappers[faceID] == null) {
-            FEWrappers[faceID] = new EnergyContainerWrapper(getUpvalueCapability(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, facing), facing);
-        }
-
-        gettingValue = true;
-        boolean result = FEWrappers[faceID].isValid();
-        gettingValue = false;
-        return result;
+        return capability == CapabilityEnergy.ENERGY &&
+                hasUpvalueCapability(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, facing);
     }
 
     @Override
     public <T> T getCapability(@NotNull Capability<T> capability, EnumFacing facing) {
-        if (gettingValue) {
-            return null;
-        }
-
         if (capability != CapabilityEnergy.ENERGY) {
             return null;
         }
 
-        int faceID = facing == null ? 6 : facing.getIndex();
+        IEnergyContainer energyContainer = getUpvalueCapability(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, facing);
+        return energyContainer == null ? null : CapabilityEnergy.ENERGY.cast(new FEEnergyWrapper(energyContainer, facing));
+    }
 
-        if (FEWrappers[faceID] == null) {
-            FEWrappers[faceID] = new EnergyContainerWrapper(getUpvalueCapability(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, facing), facing);
+    public class FEEnergyWrapper implements IEnergyStorage {
+
+        private final IEnergyContainer energyContainer;
+        private final EnumFacing facing;
+
+        public FEEnergyWrapper(IEnergyContainer energyContainer, EnumFacing facing) {
+            this.energyContainer = energyContainer;
+            this.facing = facing;
         }
 
-        gettingValue = true;
+        @Override
+        public int receiveEnergy(int maxReceive, boolean simulate) { // TODO: add a config here to remove voltage restrictions.
 
-        if (FEWrappers[faceID].isValid()) {
-            gettingValue = false;
-            return CapabilityEnergy.ENERGY.cast(FEWrappers[faceID]);
+            if (!canReceive()) return 0;
+
+            if (maxReceive == 1 && simulate) {
+                // Damn you mekanism
+                return energyContainer.getEnergyCanBeInserted() > 0L ? 1 : 0;
+            }
+
+            long maxIn = maxReceive / FeCompat.ratio(true);
+            long missing = energyContainer.getEnergyCanBeInserted();
+            long voltage = energyContainer.getInputVoltage();
+            maxIn = Math.min(missing, maxIn);
+            long maxAmp = Math.min(energyContainer.getInputAmperage(), maxIn / voltage);
+
+            if (true && energyContainer instanceof EnergyNetHandler) { // TODO: add a config here to remove this check, thus protecting the cables from burning.
+                maxIn = maxReceive / FeCompat.ratio(true);
+                maxAmp = maxIn / voltage;
+            }
+
+            if (maxAmp < 1L) return 0;
+
+            if (!simulate) {
+                maxAmp = energyContainer.acceptEnergyFromNetwork(facing, voltage, maxAmp);
+            }
+
+            return GFyUtility.safeConvertEUToFE(maxAmp * voltage);
         }
 
-        gettingValue = false;
+        @Override
+        public int extractEnergy(int maxExtract, boolean simulate) {
+            return 0; // this is done in base CEu
+        }
 
-        return null;
+        @Override
+        public int getEnergyStored() {
+            return GFyUtility.safeConvertEUToFE(energyContainer.getEnergyStored());
+        }
+
+        @Override
+        public int getMaxEnergyStored() {
+            return GFyUtility.safeConvertEUToFE(energyContainer.getEnergyCapacity());
+        }
+
+        @Override
+        public boolean canExtract() {
+            return false; // this is done in base CEu
+        }
+
+        @Override
+        public boolean canReceive() {
+            return energyContainer.inputsEnergy(this.facing);
+        }
     }
 }

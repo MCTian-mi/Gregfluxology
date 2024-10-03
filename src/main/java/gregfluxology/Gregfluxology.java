@@ -21,7 +21,6 @@ package gregfluxology;
 
 import gregfluxology.eu.FEToEUProvider;
 import gregtech.api.capability.FeCompat;
-import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -40,27 +39,11 @@ public class Gregfluxology {
     public static Logger logger;
     public ResourceLocation resourceLocation;
 
-    /**
-     * Safely cast a Long to an Int without overflow.
-     *
-     * @param v The Long value to cast to an Int.
-     * @return v, cast to Int, or Integer.MAX_VALUE if it would overflow.
-     */
-    public static int safeCastLongToInt(long v) {
-        return v > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) v;
-    }
-
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         resourceLocation = new ResourceLocation(Tags.MODID, "fecapability");
         logger = event.getModLog();
     }
-
-//	@Mod.EventHandler
-//	public void init(FMLPostInitializationEvent event) {
-//		ConfigHolder.compat.energy.nativeEUToFE = false;
-//		logger.info("NativeEUToFE has been disabled");
-//	}
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
@@ -69,10 +52,7 @@ public class Gregfluxology {
 
     @SubscribeEvent
     public void attachTileCapability(AttachCapabilitiesEvent<TileEntity> event) {
-        var te = event.getObject();
-        if (te instanceof IGregTechTileEntity) {
-            event.addCapability(resourceLocation, new FEToEUProvider(te));
-        }
+        event.addCapability(resourceLocation, new FEToEUProvider(event.getObject()));
     }
 
 //	@SubscribeEvent
