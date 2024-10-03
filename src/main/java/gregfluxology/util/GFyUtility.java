@@ -1,4 +1,4 @@
-package gregfluxology.eu;
+package gregfluxology.util;
 
 import gregtech.api.capability.FeCompat;
 

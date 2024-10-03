@@ -17,8 +17,9 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-package gregfluxology.eu;
+package gregfluxology.cap;
 
+import gregfluxology.util.GFyUtility;
 import gregtech.api.capability.FeCompat;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IEnergyContainer;

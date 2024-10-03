@@ -19,8 +19,7 @@
 
 package gregfluxology;
 
-import gregfluxology.eu.FEToEUProvider;
-import gregtech.api.capability.FeCompat;
+import gregfluxology.cap.FEToEUProvider;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -34,8 +33,6 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = Tags.MODID, name = Tags.MODNAME, version = Tags.VERSION, dependencies = "after:gregtech;")
 public class Gregfluxology {
 
-    public static final long MAX_VALUE_AS_LONG = Long.MAX_VALUE / FeCompat.ratio(false);
-    public static final long OVERFLOW_CHECK = Integer.MAX_VALUE / FeCompat.ratio(false);
     public static Logger logger;
     public ResourceLocation resourceLocation;
 
