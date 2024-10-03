@@ -19,6 +19,7 @@
 
 package gregfluxology.cap;
 
+import gregfluxology.GFyConfig;
 import gregfluxology.util.GFyUtility;
 import gregtech.api.capability.FeCompat;
 import gregtech.api.capability.GregtechCapabilities;
@@ -80,7 +81,7 @@ public class FEToEUProvider extends CapabilityCompatProvider {
             maxIn = Math.min(missing, maxIn);
             long maxAmp = Math.min(energyContainer.getInputAmperage(), maxIn / voltage);
 
-            if (true && energyContainer instanceof EnergyNetHandler) { // TODO: add a config here to remove this check, thus protecting the cables from burning.
+            if (GFyConfig.ignoreCableCapacity && energyContainer instanceof EnergyNetHandler) { // TODO: add a config here to remove this check, thus protecting the cables from burning.
                 maxIn = maxReceive / FeCompat.ratio(true);
                 maxAmp = maxIn / voltage;
             }
