@@ -39,7 +39,7 @@ public class Gregfluxology {
     public static Logger logger;
     public ResourceLocation resourceLocation;
 
-    @SidedProxy(modId = Tags.MODID, clientSide = Tags.MODID + ".ClientProxy", serverSide = Tags.MODID + "CommonProxy")
+    @SidedProxy(modId = Tags.MODID, clientSide = Tags.MODID + ".ClientProxy", serverSide = Tags.MODID + ".CommonProxy")
     public static CommonProxy proxy;
 
     @Mod.EventHandler
