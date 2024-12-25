@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "gregfluxology.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "gregfluxology.refmap.json",
+  "mixins": [
+    "gregtech.ForgeCommonEventListenerMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
