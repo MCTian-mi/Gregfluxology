@@ -3,7 +3,7 @@ package gregfluxology;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.ModLoadingContext;
 import org.slf4j.Logger;
 
 @Mod(Gregfluxology.MODID)
@@ -13,7 +13,8 @@ public class Gregfluxology {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public Gregfluxology(FMLJavaModLoadingContext context) {
+    public Gregfluxology() {
+        var context= ModLoadingContext.get();
         context.registerConfig(ModConfig.Type.COMMON, GFyConfig.SPEC);
     }
 }
