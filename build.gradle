@@ -180,9 +180,8 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    implementation fg.deobf("com.gregtechceu.gtceu:gtceu-1.20.1:1.4.4") { transitive = false }
-    implementation fg.deobf("com.lowdragmc.ldlib:ldlib-forge-1.20.1:1.0.28.a") { transitive = false }
-
+    implementation fg.deobf("com.gregtechceu.gtceu:gtceu-1.20.1:1.6.4") { transitive = false }
+    implementation fg.deobf("com.lowdragmc.ldlib:ldlib-forge-1.20.1:1.0.34") { transitive = false }
     implementation fg.deobf("curse.maven:mekanism-268560:5662583")
 }
 
