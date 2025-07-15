@@ -40,6 +40,7 @@ public class FEToEUProvider extends CapabilityCompatProvider {
     }
 
     @Override
+    @NotNull
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, Direction facing) {
         if (capability != ForgeCapabilities.ENERGY) {
             return LazyOptional.empty();
@@ -53,7 +54,7 @@ public class FEToEUProvider extends CapabilityCompatProvider {
                 LazyOptional.empty();
     }
 
-    public class FEEnergyWrapper implements IEnergyStorage {
+    public static class FEEnergyWrapper implements IEnergyStorage {
 
         private final IEnergyContainer energyContainer;
         private final Direction facing;

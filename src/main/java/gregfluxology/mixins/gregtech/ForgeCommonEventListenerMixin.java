@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = ForgeCommonEventListener.class, remap = false)
 public class ForgeCommonEventListenerMixin {
 
-    @Inject(method = "attachCapabilities", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "registerBlockEntityCapabilities", at = @At("HEAD"), cancellable = true)
     private static void attachTileCapability(AttachCapabilitiesEvent<BlockEntity> event, CallbackInfo ci) {
         if (event.getObject() instanceof IMachineBlockEntity) {
             event.addCapability(GTCEu.id("eu_capability"), new FEToEUProvider(event.getObject()));
