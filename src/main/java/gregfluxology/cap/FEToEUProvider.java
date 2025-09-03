@@ -78,6 +78,7 @@ public class FEToEUProvider extends CapabilityCompatProvider {
             long maxIn = maxReceive / FeCompat.ratio(true);
             long missing = energyContainer.getEnergyCanBeInserted();
             long voltage = energyContainer.getInputVoltage();
+            if(voltage == 0) return 0;
             maxIn = Math.min(missing, maxIn);
             long maxAmp = Math.min(energyContainer.getInputAmperage(), maxIn / voltage);
 
