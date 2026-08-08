@@ -1,6 +1,6 @@
 package gregfluxology.mixins.gregtech;
 
-import com.gregtechceu.gtceu.common.CommonProxy;
+import com.gregtechceu.gtceu.common.CommonInit;
 import gregfluxology.util.GFyUtility;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.capabilities.BlockCapability;
@@ -9,14 +9,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(value = CommonProxy.class, remap = false)
+@Mixin(value = CommonInit.class, remap = false)
 public class CommonProxyMixin {
 
     @Redirect(method = "registerCapabilities",
             at = @At(value = "INVOKE",
                     target = "Lnet/neoforged/neoforge/capabilities/RegisterCapabilitiesEvent;isBlockRegistered(Lnet/neoforged/neoforge/capabilities/BlockCapability;Lnet/minecraft/world/level/block/Block;)Z",
                     ordinal = 0))
-    public boolean skipGTBlocks(RegisterCapabilitiesEvent event, BlockCapability<?, ?> capability, Block block) {
+    private static boolean skipGTBlocks(RegisterCapabilitiesEvent event, BlockCapability<?, ?> capability, Block block) {
         if (GFyUtility.isGTMachine(block)) {
             return false;
         }
